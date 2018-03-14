@@ -1,43 +1,55 @@
 package rental;
 
 public class RentalPriceCalculator {
-	
-	// age - age of driver
-	// licence - number of full years person holds driving licence
-	// clazz - class of the car from 1 (smallest) to 5 (largest) that person wishes to rent
-	// acc - has s/he caused any accidents within last year
-	// acc2 - has s/he participated (but not caused) in any accidents within last year
-	// season - if it is high season or not
-	public double price(int age, int licence, int clazz, boolean acc, boolean acc2, boolean season) {
-		
-		if (age < 18) {
-			throw new IllegalArgumentException("Driver too young - cannot quote the price");
+
+	public double calculatePricePerDay(int driverAge, int driverLicenceAge, boolean driverAccidentsLastYear, int carClass, boolean highSeason) {
+		double rentalPrice;
+
+		isDriverSuitable(carClass, driverAge, driverLicenceAge);
+
+		rentalPrice = driverAge;
+		rentalPrice = ageBasedPrice(rentalPrice, carClass, driverAge, highSeason);
+		rentalPrice = licenceBasedPrice(rentalPrice, driverLicenceAge);
+		rentalPrice = accidentBasedPrice(driverAccidentsLastYear, driverAge, rentalPrice);
+		rentalPrice = isMaximumPrice(rentalPrice);
+
+		return rentalPrice;
+	}
+
+	public void isDriverSuitable(int carClass, int driverAge, int driverLicenceAge) {
+		if (driverAge < 18) {
+			throw new IllegalArgumentException("Driver too young - cannot quote the calculatePrice");
 		}
-		if (age <= 21 && clazz > 2) {
+		if (driverAge <= 21 && carClass > 2) {
 			throw new UnsupportedOperationException("Drivers 21 y/o or less can only rent Class 1 vehicles");
 		}
-		
-		double rentalprice = age;
-		
-		if (clazz >=4 && age <= 25 && season != false) {
-			rentalprice = rentalprice * 2;
-		}
-		
-		if (licence < 1) {
+		if (driverLicenceAge < 1) {
 			throw new IllegalArgumentException("Driver must hold driving licence at least for one year. Can not rent a car!");
 		}
-		
-		if (licence < 3) {
-			rentalprice = rentalprice * 1.3;
-		}
-		
-		if (acc == true && age < 30) {
-			rentalprice += 15;
-		}
+	}
 
-		if (rentalprice > 1000) {
+	public double ageBasedPrice(double rentalPrice, int carClass, int driverAge, boolean highSeason) {
+		if (carClass >=4 && driverAge <= 25 && highSeason) { return rentalPrice * 2; }
+		return rentalPrice;
+	}
+
+	public double licenceBasedPrice(double rentalPrice, int driverLicenceAge) {
+		if (driverLicenceAge < 3) { return rentalPrice * 1.3; }
+		return rentalPrice;
+	}
+
+	private double isMaximumPrice(double rentalPrice) {
+		if (rentalPrice > 1000) {
 			return 1000.00;
 		}
-		return rentalprice;
+		return rentalPrice;
+	}
+
+	private double accidentBasedPrice(boolean driverAccidentsLastYear, int driverAge, double rentalPrice) {
+		if (driverAccidentsLastYear && driverAge < 30) {
+			rentalPrice += 15;
+			return rentalPrice;
+		}
+		return rentalPrice;
 	}
 }
