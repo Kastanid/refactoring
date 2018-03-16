@@ -38,14 +38,14 @@ public class RentalPriceCalculator {
 		return rentalPrice;
 	}
 
-	private double isMaximumPrice(double rentalPrice) {
+	public double isMaximumPrice(double rentalPrice) {
 		if (rentalPrice > 1000) {
 			return 1000.00;
 		}
 		return rentalPrice;
 	}
 
-	private double accidentBasedPrice(boolean driverAccidentsLastYear, int driverAge, double rentalPrice) {
+	public double accidentBasedPrice(boolean driverAccidentsLastYear, int driverAge, double rentalPrice) {
 		if (driverAccidentsLastYear && driverAge < 30) {
 			rentalPrice += 15;
 			return rentalPrice;
